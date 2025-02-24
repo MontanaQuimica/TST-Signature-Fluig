@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura Digital</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .grid {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border: 1px solid #000;
+            position: relative;
+        }
+        .menu {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Assinatura Digital</h2>
+        <div class="menu">
+            <label for="color">Cor:</label>
+            <input type="color" id="color" value="#000000">
+            
+            <label for="size">Tamanho:</label>
+            <input type="number" id="size" value="3" min="1" max="10">
+            
+            <label for="font">Fonte:</label>
+            <select id="font">
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+        </div>
+        <canvas id="signatureCanvas" class="grid"></canvas>
+        <div>
+            <button onclick="saveSignature()">Salvar</button>
+            <button onclick="clearSignature()">Redefinir</button>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let color = document.getElementById('color').value;
+        let size = document.getElementById('size').value;
+        
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 2) {
+                drawing = true;
+                ctx.beginPath();
+                ctx.moveTo(e.offsetX, e.offsetY);
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (drawing) {
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+                ctx.stroke();
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+        });
+        
+        document.getElementById('color').addEventListener('input', (e) => {
+            color = e.target.value;
+        });
+        
+        document.getElementById('size').addEventListener('input', (e) => {
+            size = e.target.value;
+        });
+        
+        function saveSignature() {
+            const link = document.createElement('a');
+            link.download = 'assinatura.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
