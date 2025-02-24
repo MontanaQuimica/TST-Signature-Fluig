@@ -24,6 +24,15 @@
         .menu {
             margin: 10px 0;
         }
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .icon-button img {
+            width: 30px;
+            height: 30px;
+        }
     </style>
 </head>
 <body>
@@ -46,8 +55,12 @@
         </div>
         <canvas id="signatureCanvas" class="grid"></canvas>
         <div>
-            <button onclick="saveSignature()">Salvar</button>
-            <button onclick="clearSignature()">Redefinir</button>
+            <button class="icon-button" onclick="saveSignature()">
+                <img src="https://cdn-icons-png.flaticon.com/512/1091/1091007.png" alt="Salvar">
+            </button>
+            <button class="icon-button" onclick="clearSignature()">
+                <img src="https://cdn-icons-png.flaticon.com/512/1076/1076334.png" alt="Apagar">
+            </button>
         </div>
     </div>
     
@@ -57,20 +70,31 @@
         let drawing = false;
         let color = document.getElementById('color').value;
         let size = document.getElementById('size').value;
-        
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-        
+
+        // Ajusta o tamanho do canvas diretamente no script
+        canvas.width = 500;
+        canvas.height = 300;
+
+        // Função para desenhar o fundo branco no canvas
+        function drawBackground() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Define a cor de fundo ao carregar a página
+        drawBackground();
+
+        // Impede o menu de contexto
         canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        
+
+        // Inicia o desenho ao pressionar o mouse
         canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 2) {
-                drawing = true;
-                ctx.beginPath();
-                ctx.moveTo(e.offsetX, e.offsetY);
-            }
+            drawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
         });
-        
+
+        // Desenha conforme o mouse se move
         canvas.addEventListener('mousemove', (e) => {
             if (drawing) {
                 ctx.lineTo(e.offsetX, e.offsetY);
@@ -79,28 +103,34 @@
                 ctx.stroke();
             }
         });
-        
+
+        // Finaliza o desenho ao soltar o mouse
         canvas.addEventListener('mouseup', () => {
             drawing = false;
         });
-        
+
+        // Atualiza a cor ao escolher
         document.getElementById('color').addEventListener('input', (e) => {
             color = e.target.value;
         });
-        
+
+        // Atualiza o tamanho ao escolher
         document.getElementById('size').addEventListener('input', (e) => {
             size = e.target.value;
         });
-        
+
+        // Salva a assinatura como imagem
         function saveSignature() {
             const link = document.createElement('a');
-            link.download = 'assinatura.png';
-            link.href = canvas.toDataURL();
+            link.download = 'assinatura.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
         }
-        
+
+        // Limpa a assinatura e redesenha o fundo branco
         function clearSignature() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBackground(); // Desenha o fundo branco novamente
         }
     </script>
 </body>
